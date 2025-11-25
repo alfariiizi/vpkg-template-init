@@ -1,0 +1,87 @@
+package cache
+
+import (
+	"context"
+	"sync"
+	"time"
+	
+	"{{.Module}}/internal/pkg/logger"
+)
+
+// Cache represents a simple in-memory cache
+type Cache struct {
+	data   map[string]cacheItem
+	mu     sync.RWMutex
+	logger logger.Logger
+}
+
+type cacheItem struct {
+	value      interface{}
+	expiration time.Time
+}
+
+// NewCache creates a new cache instance
+func NewCache(logger logger.Logger) *Cache {
+	return &Cache{
+		data:   make(map[string]cacheItem),
+		logger: logger,
+	}
+}
+
+// Set stores a value with optional TTL
+func (c *Cache) Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	expiration := time.Time{}
+	if ttl > 0 {
+		expiration = time.Now().Add(ttl)
+	}
+
+	c.data[key] = cacheItem{
+		value:      value,
+		expiration: expiration,
+	}
+
+	c.logger.Debug("Cache set", "key", key, "ttl", ttl)
+	return nil
+}
+
+// Get retrieves a value from cache
+func (c *Cache) Get(ctx context.Context, key string) (interface{}, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	item, exists := c.data[key]
+	if !exists {
+		return nil, false
+	}
+
+	// Check expiration
+	if !item.expiration.IsZero() && time.Now().After(item.expiration) {
+		c.logger.Debug("Cache expired", "key", key)
+		return nil, false
+	}
+
+	return item.value, true
+}
+
+// Delete removes a value from cache
+func (c *Cache) Delete(ctx context.Context, key string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	delete(c.data, key)
+	c.logger.Debug("Cache deleted", "key", key)
+	return nil
+}
+
+// Clear removes all values from cache
+func (c *Cache) Clear(ctx context.Context) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.data = make(map[string]cacheItem)
+	c.logger.Info("Cache cleared")
+	return nil
+}

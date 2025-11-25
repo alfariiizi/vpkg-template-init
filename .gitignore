@@ -1,0 +1,12 @@
+# Development files
+*.swp
+*.swo
+*~
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Test directories
+test-output/

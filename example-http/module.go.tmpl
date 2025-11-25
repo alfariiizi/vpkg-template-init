@@ -1,0 +1,49 @@
+package http
+
+import (
+	"go.uber.org/fx"
+	
+	"{{.Module}}/internal/pkg/logger"
+)
+
+// Module provides FX module for HTTP server
+var Module = fx.Module(
+	"http",
+	fx.Provide(
+		NewServer,
+	),
+	fx.Invoke(func(server *Server) {
+		// Server lifecycle is managed by FX
+	}),
+)
+
+// Server represents HTTP server
+type Server struct {
+	config Config
+	logger logger.Logger
+}
+
+// NewServer creates a new HTTP server
+func NewServer(config Config, logger logger.Logger) (*Server, error) {
+	return &Server{
+		config: config,
+		logger: logger,
+	}, nil
+}
+
+// Start starts the HTTP server
+func (s *Server) Start() error {
+	s.logger.Info("Starting HTTP server",
+		"host", s.config.Host,
+		"port", s.config.Port,
+	)
+	// Add your HTTP server start logic here
+	return nil
+}
+
+// Stop gracefully stops the HTTP server
+func (s *Server) Stop() error {
+	s.logger.Info("Stopping HTTP server")
+	// Add your HTTP server stop logic here
+	return nil
+}

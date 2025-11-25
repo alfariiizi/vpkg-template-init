@@ -1,0 +1,17 @@
+name: my-namespace/example-cache
+title: Example Cache Package
+description: Example cache package with simple key-value operations and TTL support
+type: fx-module
+version: v1.0.0
+author: Your Name
+license: MIT
+repository: https://github.com/your-username/my-namespace
+website: https://your-namespace-docs.com
+destination: internal/adapter/my-namespace/example-cache
+tags:
+  - cache
+  - storage
+  - example
+capabilities:
+  - key-value-storage
+  - ttl-support

@@ -1,0 +1,19 @@
+namespace: my-namespace
+description: My awesome VPKG packages
+packages:
+  - name: example-http
+    version: v1.0.0
+    description: Example HTTP server package with FX integration
+    tags:
+      - transport
+      - http
+      - example
+    type: fx-module
+  - name: example-cache
+    version: v1.0.0
+    description: Example cache package with simple key-value operations
+    tags:
+      - cache
+      - storage
+      - example
+    type: fx-module

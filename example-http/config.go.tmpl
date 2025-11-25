@@ -1,0 +1,15 @@
+package http
+
+// Config holds HTTP server configuration
+type Config struct {
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
+}
+
+// DefaultConfig returns default HTTP configuration
+func DefaultConfig() Config {
+	return Config{
+		Host: "0.0.0.0",
+		Port: 8080,
+	}
+}
